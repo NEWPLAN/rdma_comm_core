@@ -1,8 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.18) #cmake版本要求
 
 
-message("Building RDMA Benchmark") #打印消息
-message("add -DDYNAMIC_E=1 when build dynamic class E, the default is static")
+message("Building rdma_comm_core") #打印消息
 
 
 set(SETTINGENV done)

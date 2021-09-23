@@ -12,6 +12,7 @@
 #include "rdma_buffer.h"
 #include "rdma_endpoint.h"
 #include <unordered_map>
+#include "rdma_config.h"
 
 namespace rdma_core
 {

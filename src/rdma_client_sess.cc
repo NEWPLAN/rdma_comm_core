@@ -11,21 +11,20 @@ namespace rdma_core
     RDMAClientSession::RDMAClientSession(Config &conf) :
         RDMASession(conf)
     {
-        TRACE_IN;
+        TRACING("Building RDMAClientSession");
         session_id_ = "ConnectionTest";
         VLOG(3) << "Creating a new RDMAClientSession for " << session_id_;
-        TRACE_OUT;
+        //TRACE_OUT;
     }
     RDMAClientSession::~RDMAClientSession()
     {
-        TRACE_IN;
+        TRACING("Releasing RDMAClientSession");
         VLOG(3) << "Destroying the RDMAClientSession of " << session_id_;
-        TRACE_OUT;
     }
 
     void RDMAClientSession::init_session()
     {
-        TRACE_IN;
+        TRACING("initing RDMAClientSession");
         int con_fd = TCPConnector::allocate_socket("RDMAClientSession");
         {
             VLOG(2) << "RDMAClient has prepared everything for Connecting ...";
@@ -53,12 +52,12 @@ namespace rdma_core
             accept_new_connection(con_fd, c_to_server);
             LOG(INFO) << "[Done] Connecting ...";
         }
-        TRACE_OUT;
     }
 
     void RDMAClientSession::lazy_config_hca()
     {
-        TRACE_IN;
+        TRACING("lazy config RDMAClientSession");
+
         VLOG(3) << "RDMAClientSession is reconfiguring the channel&adapter";
         for (auto &each_endpoint : end_point_mgr_)
         {
@@ -66,13 +65,11 @@ namespace rdma_core
             a_config.using_shared_cq = false;
             //a_config.traffic_class = 64;
         }
-        TRACE_OUT;
     }
     void RDMAClientSession::post_connecting()
     {
-        TRACE_IN;
+        TRACING("after connection");
         VLOG(3) << "RDMAClientSession is doing when post_connecting";
-        TRACE_OUT;
     }
 
 }; // end namespace rdma_core

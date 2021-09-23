@@ -13,6 +13,8 @@
 #include "rdma_endpoint.h"
 #include <functional>
 #include <vector>
+#include "rdma_config.h"
+
 namespace rdma_core
 {
     class RDMAChannel;
@@ -62,6 +64,7 @@ namespace rdma_core
         virtual void default_process_write_done(struct ibv_wc *wc, void *args);
         virtual void default_process_read_done(struct ibv_wc *wc, void *args);
         virtual void default_process_recv_write_with_imm_done(struct ibv_wc *wc, void *args);
+        void real_connecting();
 
     protected:
         Config work_env_;                                          // environment of this session

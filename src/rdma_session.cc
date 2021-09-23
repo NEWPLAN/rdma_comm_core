@@ -433,32 +433,34 @@ namespace rdma_core
         VLOG_EVERY_N(3, SHOWN_LOG_EVERN_N) << on_recv_data_info;
     }
 
+    void RDMASession::real_connecting()
+    {
+        std::vector<std::unique_ptr<std::thread>> connecting_helper_threads;
+        std::atomic_bool ready = {false};
+        auto connecting_helper = [](RDMAEndPoint *end_point,
+                                    std::atomic_bool &is_ready)
+        {
+            while (!is_ready)
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+            end_point->connecting();
+        };
+        for (auto &each_endpoint : this->end_point_mgr_)
+        {
+            std::thread *tmp_thread = new std::thread(connecting_helper,
+                                                      each_endpoint.get(),
+                                                      std::ref(ready));
+            connecting_helper_threads.push_back(std::move(std::unique_ptr<std::thread>(tmp_thread)));
+        }
+        ready = true;
+        for (auto &helper_thread : connecting_helper_threads)
+            helper_thread->join();
+    }
+
     void RDMASession::connecting()
     {
         lazy_config_hca();
-        {
-            std::vector<std::unique_ptr<std::thread>> connecting_helper_threads;
-            std::atomic_bool ready = {false};
-            auto connecting_helper = [](RDMAEndPoint *end_point,
-                                        std::atomic_bool &is_ready)
-            {
-                while (is_ready == false)
-                {
-                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                }
-                end_point->connecting();
-            };
-            for (auto &each_endpoint : end_point_mgr_)
-            {
-                std::thread *tmp_thread = new std::thread(connecting_helper,
-                                                          each_endpoint.get(),
-                                                          std::ref(ready));
-                connecting_helper_threads.push_back(std::move(std::unique_ptr<std::thread>(tmp_thread)));
-            }
-            ready = true;
-            for (auto &helper_thread : connecting_helper_threads)
-                helper_thread->join();
-        }
+        real_connecting();
         post_connecting();
     }
 

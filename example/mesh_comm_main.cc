@@ -7,7 +7,6 @@
 #include <memory>
 #include <thread>
 
-
 #define B (1)
 #define KB (1024 * B)
 #define MB (1024 * KB)
@@ -391,7 +390,7 @@ void start_client_service(Config conf, std::string server_ip)
 
 int main(int argc, char *argv[])
 {
-    Config conf;
+    Derived_Config conf;
     conf.parse_args(argc, argv);
 
     VLOG(3) << "Start mesh comm_service";

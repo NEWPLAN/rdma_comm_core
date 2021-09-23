@@ -1,5 +1,6 @@
 #include "rdma_endpoint.h"
 #include "rdma_channel.h"
+#include "rdma_config.h"
 
 namespace rdma_core
 {

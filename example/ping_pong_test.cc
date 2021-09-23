@@ -12,7 +12,7 @@
 
 int main(int argc, char *argv[])
 {
-    Config conf;
+    Derived_Config conf;
     conf.parse_args(argc, argv);
 
     std::unique_ptr<rdma_core::RDMASession> session = nullptr;

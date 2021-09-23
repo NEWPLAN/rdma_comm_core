@@ -13,6 +13,7 @@
 #include "tcp_connector.h"
 #include <memory>
 #include <string>
+#include "rdma_config.h"
 namespace rdma_core
 {
     class RDMAChannel;

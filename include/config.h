@@ -11,12 +11,11 @@
 #include <string.h>
 #include <string>
 #include <vector>
+#include "rdma_config.h"
 
 #define no_argument 0
 #define required_argument 1
 #define optional_argument 2
-
-#define DEBUG_TWO_CHANNEL
 
 // #define FULL_MESH 299
 // #define SERVER_CLIENT 0
@@ -44,7 +43,7 @@ enum AllReduceType
 
 //#define DEBUG_SINGLE_THREAD
 
-class Config
+class Derived_Config : public rdma_core::Config
 {
 public:
     void usage(const char *argv0)
