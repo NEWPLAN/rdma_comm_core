@@ -77,7 +77,7 @@ mkdir build; cd build; cmake .. -GNinja; ninja;
 ```
 ### Run Server
 ```shell
-newplan@g11-nasp ~/t/F/3/r/build (main)> RCL_MAX_VLOG_LEVEL=3 ./lat_bw_benchmark --role=master
+~/t/F/3/r/build (main)> RCL_MAX_VLOG_LEVEL=3 ./lat_bw_benchmark --role=master
 RCL_MAX_VLOG_LEVEL is set to 3, indicating level in VLOG (level) less than 3 would show
 WARNING: Logging before InitGoogleLogging() is written to STDERR
 I0923 18:30:27.148751 17905 rdma_session.cc:36] Creating a new RDMASession for
@@ -168,11 +168,11 @@ I0923 18:30:46.268790 17905 rdma_channel.cc:63] Buffer(benchmark_buffer) has bee
 I0923 18:30:46.268828 17905 rdma_channel.cc:25] Destroying RDMAChannel with id: DataChannel
 I0923 18:30:46.268864 17905 rdma_adapter.cc:12] RDMAAdapter is released
 I0923 18:30:46.269376 17905 rdma_device.cc:60] RDMADevice(mlx5_0) is released
-newplan@g11-nasp ~/t/F/3/r/build (main)>
+~/t/F/3/r/build (main)>
 ```
 ### Run Client
 ```shell 
-newplan@g13-nasp ~/t/F/3/r/build (main)> RCL_MAX_VLOG_LEVEL=3 ./lat_bw_benchmark --role=slaver --master=12.12.12.111
+~/t/F/3/r/build (main)> RCL_MAX_VLOG_LEVEL=3 ./lat_bw_benchmark --role=slaver --master=12.12.12.111
 RCL_MAX_VLOG_LEVEL is set to 3, indicating level in VLOG (level) less than 3 would show
 WARNING: Logging before InitGoogleLogging() is written to STDERR
 I0923 18:30:32.639127 56562 rdma_session.cc:36] Creating a new RDMASession for slaver
@@ -384,7 +384,7 @@ I0923 18:30:46.296794 56562 rdma_channel.cc:63] Buffer(benchmark_buffer) has bee
 I0923 18:30:46.296826 56562 rdma_channel.cc:25] Destroying RDMAChannel with id: DataChannel
 I0923 18:30:46.296864 56562 rdma_adapter.cc:12] RDMAAdapter is released
 I0923 18:30:46.297307 56562 rdma_device.cc:60] RDMADevice(mlx5_0) is released
-newplan@g13-nasp ~/t/F/3/r/build (main)>
+~/t/F/3/r/build (main)>
 ```
 # Updates
 - The initialization version is uploaded.
