@@ -69,7 +69,7 @@ namespace rdma_core
 
     private:
         std::string get_unique_id();                // build a unique id for the rdma endpoint
-        void setup_rdma_channel(std::string info_); // build a rdma_channel
+        void setup_rdma_channel(std::string info_); // build an rdma_channel
 
     private:
         std::string id_ = "RDMAEndPoint";                            // the id of the endpoint

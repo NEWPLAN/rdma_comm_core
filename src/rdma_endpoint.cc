@@ -86,9 +86,9 @@ namespace rdma_core
         return "[" + pre_connector_->get_my_ip() + ":" + std::to_string(pre_connector_->get_my_port()) + "-->" + pre_connector_->get_peer_ip() + ":" + std ::to_string(pre_connector_->get_peer_port()) + "]@" + registered_session_->get_id();
     }
 
-    void RDMAEndPoint::setup_rdma_channel(std::string info_) // build a rdma_channel
+    void RDMAEndPoint::setup_rdma_channel(std::string info_) // build an rdma_channel
     {
-        VLOG(3) << "creating&preparing a rdma channel for " << info_;
+        VLOG(3) << "creating&preparing an rdma channel for " << info_;
         RDMAChannel *channel = RDMAChannel::build_rdma_channel(work_env_, info_, this);
         rdma_channel_mgr_.push_back(std::move(std::unique_ptr<RDMAChannel>(channel)));
     }

@@ -71,7 +71,7 @@ namespace rdma_core
     bool RDMADevice::register_adapter(RDMAAdapter *adapter)
     {
         TRACE_IN;
-        VLOG(3) << "Try to register a RDMAAdapter in " << this->info();
+        VLOG(3) << "Try to register an RDMAAdapter in " << this->info();
         if (adapter == nullptr)
         {
             LOG(WARNING) << "Adapter is null, register failed";

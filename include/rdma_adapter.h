@@ -1,7 +1,7 @@
 /******************************************************************
  * RDMAAdapter is the low-level of RDMA communication operators
  * It is the base class of RDMAChannel(exposed to user-space)
- * It is the manager of a RDMA connection, which contains
+ * It is the manager of an RDMA connection, which contains
  *      -- qp, a handler of rdma communication in verbs
  *      -- pd, protection domain for operations on qp
  *      -- cq, may be shared with other connections 

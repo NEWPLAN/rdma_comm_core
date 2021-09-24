@@ -8,29 +8,29 @@
 # Basic Design
 
 ## Work Mode
-In general, RDMA works in the asynchronous event-driven fashion for high perfrormance, and [rdma_comm_core](https://github.com/NEWPLAN/rdma_comm_core) supports three basic working modes. 
+In general, RDMA works in the asynchronous event-driven fashion for high performance, and [rdma_comm_core](https://github.com/NEWPLAN/rdma_comm_core) supports three basic working modes. 
 
-- `polling-aggregasively`: In this mode, thread(s) would proactively poll the `completion queue` without blocking to fetch the executing result (success or failed) of work request submitted before. Application working in this mode may be latency-sensitive, accordingly, CPU resources are required.
-- `completion channel`: In this mode, the thread(s) to fetch the results would be stucked in the function ([ibv_get_cq_event](https://github.com/linux-rdma/rdma-core/blob/aa0fda8580149bdaf5138d7a2891011c10fe6701/libibverbs/verbs.h#L2829)) until waked up by a new incoming event(success or failed). Application working in thie mode can save many CPU resouces, accordingly, the processing latency increases.
-- `epoll`: In this mode, users can set a global `epoll` resource to listen to the event for a group of `completion queues` while not being blocked by the API. By setting a timeout, the polling thread can be released to process other workflow despite of no new incoming events.
+- **`polling-aggressively`**: In this mode, thread(s) would proactively poll the `completion queue` without blocking to fetch the executing result (success or failure) of work requests submitted before. Application working in this mode may be latency-sensitive, accordingly, CPU resources are required.
+- **`completion channel`**: In this mode, the thread(s) to fetch the results would be stuck in the function ([ibv_get_cq_event](https://github.com/linux-rdma/rdma-core/blob/aa0fda8580149bdaf5138d7a2891011c10fe6701/libibverbs/verbs.h#L2829)) until waked up by a new incoming event(success or failure). Application working in this mode can save many CPU resources, accordingly, the processing latency increases.
+- **`epoll`**: In this mode, users can set a global `epoll` resource to listen to the event for a group of `completion queues` while not being blocked by the API. By setting a timeout, the polling thread can be released to process other workflows despite no new incoming events.
 
 ## Thread Mode 
-[rdma_comm_core](https://github.com/NEWPLAN/rdma_comm_core) is based on thread mode. Currently, it support two thread mode as follows:
-- `Per-thread-per-QPair`: In this mode, assign a privated thread to each QPair to track the work request state in their completion queues.
-- `Shared-CQ`: In this mode, multiple QPairs may shared a global `completion queue(CQ)` to track the wqe executing status.
+[rdma_comm_core](https://github.com/NEWPLAN/rdma_comm_core) is based on thread mode. Currently, it supports two thread modes as follows:
+- **`Per-thread-per-QPair`**: In this mode, assign a private thread to each QPair to track the work request state in their completion queues.
+- **`Shared-CQ`**: In this mode, multiple QPairs may share a global `completion queue(CQ)` to track the ```wqe``` executing status.
 
 The Thread Mode is configured in [void lazy_config_hca()](https://github.com/NEWPLAN/rdma_comm_core/blob/abf254743b137640849ff5fc8dffa524102e956f/include/rdma_session.h#L51), which should be implemented by sub-class.
 
 
 ## Architecture Overview
-The architecture overview of [rdma_comm_core](https://github.com/NEWPLAN/rdma_comm_core) is shown as below.
+The architecture overview of [rdma_comm_core](https://github.com/NEWPLAN/rdma_comm_core) is shown below.
 
 ![Architecture Overview](docs/arch_overview.jpg)
 
  There are two roles distinguished in [rdma_comm_core](https://github.com/NEWPLAN/rdma_comm_core).
 
-- ```ServerSession``` is inherited by ```RDMASession``` and handles the workflow of server sides, such as listen to and accept new connection requests. Once a new connection request is detected, the ```ServerSession``` would allocate corresponding resources and interacts with the client side to establish the connection.
-- ```ClientSession``` is inherited by ```RDMASession``` and handles the workflow of client sides. It interacts with ```ServerSession```  to finish the connection.
+- ```ServerSession``` is inherited from ```RDMASession``` and handles the workflow of server sides, such as listen to and accept new connection requests. Once a new connection request is detected, the ```ServerSession``` would allocate corresponding resources and interacts with the client side to establish the connection.
+- ```ClientSession``` is inherited from ```RDMASession``` and handles the workflow of client sides. It interacts with ```ServerSession```  to finish the connection.
 
 Both ```ServerSession```  and ```ClientSession``` use ```EndPoint``` to identify the connection. Differently, ```ServerSession```  may have multiple ```EndPoint```s to deal with different connections individually, while there is only an ```EndPoint``` in the ```ClientSession``` to deal with data exchange with the server side.
 
@@ -42,29 +42,29 @@ Below is the inside of an ```EndPoint```.
 
 ## Basic Components
 Before showing how EndPoint works, we would introduce each component first.
-- ```RDMADevice``` is the abstraction of RDMA device, and each instance is bound to the hardware device(e.g., NIC) and provices basic services, such as ```query/modify device attributes/status```, ```SEND```, ```RECV```, ```WRITE(-WITH_IMM)```, ```READ```, manage the context/resources of hardware etc.
-- ```RDMAAdapter``` is the lower abstraction of a RDMA connection context. It is instanced once a connection is launched and interacts with ```RDMADevice``` to process and connection workflow.
-- ```RDMAChannel``` is the higher abstraction of a RDMA connection context. It is inheribted from ```RDMAAdapter``` and interacts with applications to process and user-space workflow.
-- ```TCPConnector``` is a wrapper of ```socket``` and serve as helper to exchange necessary infomation when establishing the RDMA connection.
-- ```RDMABuffer``` is the memory manager exposed to the upper applications to provide placeholder for communcation workflow.
+- ```RDMADevice``` is the abstraction of RDMA device, and each instance is bound to the hardware device(e.g., NIC) and provides basic services, such as ```query/modify device attributes/status```, ```SEND```, ```RECV```, ```WRITE(-WITH_IMM)```, ```READ```, manage the context/resources of hardware, etc.
+- ```RDMAAdapter``` is the lower abstraction of an RDMA connection context. It is instanced once a connection is launched and interacts with ```RDMADevice``` to process and connection workflow.
+- ```RDMAChannel``` is the higher abstraction of an RDMA connection context. It is inherited from ```RDMAAdapter``` and interacts with applications to process and user-space workflow.
+- ```TCPConnector``` is a wrapper of ```TCP Socket``` and serves as a helper to exchange necessary information when establishing the RDMA connection.
+- ```RDMABuffer``` is the memory manager exposed to the upper applications to provide placeholders for communication workflow.
 
 ## Organization
-- There is at least one ```TCPConnector``` owned by an ```EndPoint``` as a helper when establish the connections. 
+- There is at least one ```TCPConnector``` owned by an ```EndPoint``` as a helper when establishing the connections. 
 - Additionally, there may be one or more ```RDMAChannel``` in an ```EndPoint``` to address different communication services.
-- All communcation requests from the upper application is submitted to ```RDMAAdapter``` by ```RDMAChannel```, and finally processed by ```RDMADevice```.
+- All communication requests from the upper application are submitted to ```RDMAAdapter``` by ```RDMAChannel``` and finally processed by ```RDMADevice```.
 
 
 # Installation and Usages
 There are three examples included in the repository, located in the subdirectory named `example`.
 ## Requirements
-[rdma_comm_core](https://github.com/NEWPLAN/rdma_comm_core) uses custimized log and backtraces that may require install before use. All related third libraries are listed as follows.
-- ```cmake``` is used as the project management system, [rdma_comm_core](https://github.com/NEWPLAN/rdma_comm_core) requires a [cmake](https://github.com/Kitware/CMake/releases/download/v3.21.3/cmake-3.21.3.tar.gz) with version(>=3.18) to simple the compiling process.
-- ```google-glog``` is a popular log system. [rdma_comm_core](https://github.com/NEWPLAN/rdma_comm_core) uses the ```RLOG``` customized from [google-glog](https://github.com/google/glog) to show the execution process with different level (specified by ```RCL_MAX_VLOG_LEVEL=XXX```)
+[rdma_comm_core](https://github.com/NEWPLAN/rdma_comm_core) uses customized log and backtraces that may require installation before use. All related third libraries are listed as follows.
+- ```cmake``` is used as the project management system, [rdma_comm_core](https://github.com/NEWPLAN/rdma_comm_core) requires a [cmake](https://github.com/Kitware/CMake/releases/download/v3.21.3/cmake-3.21.3.tar.gz) with version(>=3.18) to simplify the compiling process.
+- ```google-glog``` is a popular log system. [rdma_comm_core](https://github.com/NEWPLAN/rdma_comm_core) uses the ```RLOG``` customized from [google-glog](https://github.com/google/glog) to show the execution process with different levels (specified by ```RCL_MAX_VLOG_LEVEL=XXX```)
 - ```backward-cpp``` is a popular backtracing subsystem. [rdma_comm_core](https://github.com/NEWPLAN/rdma_comm_core) uses ```backtrace_service``` customized from [backward-cpp](https://github.com/bombela/backward-cpp) to address the runtime exception.
 - ```gcc/g++``` is used in [rdma_comm_core](https://github.com/NEWPLAN/rdma_comm_core) as the default compiler. Particularly, the version of ```gcc/g++``` should be >= [9.3.0](https://ftp.gnu.org/gnu/gcc/gcc-9.3.0/) to support the ```C++``` grammar used in [rdma_comm_core](https://github.com/NEWPLAN/rdma_comm_core).
   
 ## Examples
-- ```ping_pong_test``` is a connection test for any rdma connection pair. It uses default processing workflows in server and client sides.
+- ```ping_pong_test``` is a connection test for any rdma connection pair. It uses default processing workflows on server and client sides.
 - ```lat_bw_benchmark``` is a customized benchmark to evaluate the latency and throughput of RDMA communication primitives (including ```SEND```, ```RECV```, ```WRITE```, ```READ```), by re-implementing the ```RDMAClientSession``` and ```RDMAServerSession```.
 - ```mesh_comm_service``` is a full-mesh communication test among N nodes, where each has ```N-1``` ```ClientSession``` and a ```ServerSession``` to WRITE/RECV data simultaneously.
 
@@ -95,7 +95,7 @@ I0923 18:30:32.648588 17905 rdma_session.cc:156] Handles new connect request by 
 I0923 18:30:32.648682 17905 rdma_session.cc:159] the remote info of connection request is 12.12.12.113:60878
 I0923 18:30:32.648783 17905 rdma_endpoint.cc:23] Create RDMAEndPoint
 I0923 18:30:32.648993 17905 rdma_endpoint.cc:29] Connection Test OK for TCPConnector@RDMAEndPoint@[12.12.12.111:2020-->12.12.12.113:60878]@@ConnectionTest
-I0923 18:30:32.649061 17905 rdma_endpoint.cc:91] creating&preparing a rdma channel for DataChannel
+I0923 18:30:32.649061 17905 rdma_endpoint.cc:91] creating&preparing an rdma channel for DataChannel
 I0923 18:30:32.649116 17905 rdma_adapter.cc:20] Creating a (virtual) adapter for DataChannel
 I0923 18:30:32.649149 17905 rdma_channel.cc:10] Creating RDMAChannel with id: DataChannel
 I0923 18:30:32.649423 17905 rdma_server_sess.cc:61] received connection: 1/0
@@ -111,7 +111,7 @@ I0923 18:30:32.757390 17906 rdma_device.cc:150] RDMADevice(mlx5_0) has 1 physica
 I0923 18:30:32.757695 17906 rdma_device.cc:177] Info on (1)th port of RDMADevice(mlx5_0) is:
 port_state: 4, max_mtu: 5, activate_mtu: 3, lid: 0, sm_lid: 0, link_layer=2.
 For more details, please ref to[https://github.com/linux-rdma/rdma-core/blob/486ecb3f12ab17e4b7970a6d5444cd165cec6ee4/libibverbs/verbs.h#L423]
-I0923 18:30:32.757964 17906 rdma_device.cc:74] Try to register a RDMAAdapter in RDMADevice(mlx5_0)
+I0923 18:30:32.757964 17906 rdma_device.cc:74] Try to register an RDMAAdapter in RDMADevice(mlx5_0)
 I0923 18:30:32.758067 17906 rdma_device.cc:86] [Success]: Register RDMAAdapter@(DataChannel)[12.12.12.111:2020-->12.12.12.113:60878]@@ConnectionTest into RDMADevice(mlx5_0)
 I0923 18:30:32.758093 17906 rdma_device.cc:119] return RDMADevice(mlx5_0) for RDMAAdapter@(DataChannel)[12.12.12.111:2020-->12.12.12.113:60878]@@ConnectionTest
 I0923 18:30:32.758273 17906 rdma_adapter.cc:97] Creating protection domain(0x7fd2f4000c40) for RDMAAdapter@(DataChannel)[12.12.12.111:2020-->12.12.12.113:60878]@@ConnectionTest
@@ -189,7 +189,7 @@ I0923 18:30:32.639897 56562 rdma_session.cc:156] Handles new connect request by 
 I0923 18:30:32.639953 56562 rdma_session.cc:159] the remote info of connection request is 12.12.12.111:2020
 I0923 18:30:32.639997 56562 rdma_endpoint.cc:22] Create RDMAEndPoint
 I0923 18:30:32.640374 56562 rdma_endpoint.cc:28] Connection Test OK for TCPConnector@RDMAEndPoint@[12.12.12.113:60878-->12.12.12.111:2020]@slaver@ConnectionTest
-I0923 18:30:32.640424 56562 rdma_endpoint.cc:90] creating&preparing a rdma channel for DataChannel
+I0923 18:30:32.640424 56562 rdma_endpoint.cc:90] creating&preparing an rdma channel for DataChannel
 I0923 18:30:32.640468 56562 rdma_adapter.cc:20] Creating a (virtual) adapter for DataChannel
 I0923 18:30:32.640497 56562 rdma_channel.cc:10] Creating RDMAChannel with id: DataChannel
 I0923 18:30:32.640698 56562 rdma_client_sess.cc:54] [Done] Connecting ...
@@ -205,7 +205,7 @@ I0923 18:30:32.748904 56563 rdma_device.cc:150] RDMADevice(mlx5_0) has 1 physica
 I0923 18:30:32.749178 56563 rdma_device.cc:177] Info on (1)th port of RDMADevice(mlx5_0) is:
 port_state: 4, max_mtu: 5, activate_mtu: 3, lid: 0, sm_lid: 0, link_layer=2.
 For more details, please ref to[https://github.com/linux-rdma/rdma-core/blob/486ecb3f12ab17e4b7970a6d5444cd165cec6ee4/libibverbs/verbs.h#L423]
-I0923 18:30:32.749398 56563 rdma_device.cc:74] Try to register a RDMAAdapter in RDMADevice(mlx5_0)
+I0923 18:30:32.749398 56563 rdma_device.cc:74] Try to register an RDMAAdapter in RDMADevice(mlx5_0)
 I0923 18:30:32.749483 56563 rdma_device.cc:86] [Success]: Register RDMAAdapter@(DataChannel)[12.12.12.113:60878-->12.12.12.111:2020]@slaver@ConnectionTest into RDMADevice(mlx5_0)
 I0923 18:30:32.749512 56563 rdma_device.cc:119] return RDMADevice(mlx5_0) for RDMAAdapter@(DataChannel)[12.12.12.113:60878-->12.12.12.111:2020]@slaver@ConnectionTest
 I0923 18:30:32.749676 56563 rdma_adapter.cc:97] Creating protection domain(0x7f5c24000c10) for RDMAAdapter@(DataChannel)[12.12.12.113:60878-->12.12.12.111:2020]@slaver@ConnectionTest
