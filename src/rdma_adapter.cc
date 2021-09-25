@@ -359,7 +359,7 @@ namespace rdma_core
 
     AdapterInfo RDMAAdapter::get_adapter_info(bool self)
     {
-        TRACE_IN;
+        TRACING("");
         AdapterInfo *adapt_info = 0;
         if (self == true)
         {
@@ -369,16 +369,14 @@ namespace rdma_core
         {
             adapt_info = &remote_;
         }
-        TRACE_OUT;
         return *adapt_info;
     }
 
     void RDMAAdapter::update_peer_adapter_info(AdapterInfo &params) // set peer runtime params
     {
-        TRACE_IN;
+        TRACING("");
         remote_ = params;
         CHECK(params.link_layer = self_.link_layer);
-        TRACE_OUT;
     }
 
     struct ibv_mr *RDMAAdapter::register_mem(void *data_ptr,      //data ptr

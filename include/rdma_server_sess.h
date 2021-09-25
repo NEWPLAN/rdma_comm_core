@@ -9,10 +9,8 @@ namespace rdma_core
         explicit RDMAServerSession(Config &conf);
         virtual ~RDMAServerSession();
 
-    private:
+    protected:                       // user should re-implement this func
         virtual void init_session(); // preparing everything for the connection
-
-    protected: // user should re-implement this func
         virtual void lazy_config_hca();
         virtual void post_connecting();
     };

@@ -18,7 +18,7 @@ namespace rdma_core
 {
     bool RDMABuffer::register_in_channel(RDMAAdapter *channel_)
     {
-        TRACE_IN;
+        TRACING("");
         CHECK(!is_sub_buffer_) << "[Error]: sub-buffer cannot register in channel";
         owned_by_channel = channel_;
         this->mr_ = channel_->register_mem(data_ptr, buffer_size,
@@ -28,7 +28,6 @@ namespace rdma_core
             each_block->owned_by_channel = owned_by_channel;
             each_block->mr_ = this->mr_;
         }
-        TRACE_OUT;
         return true;
     }
     bool RDMABuffer::deregister_from_channel(RDMAAdapter *channel_)
@@ -122,7 +121,7 @@ namespace rdma_core
         buffer_size((size_t)buffer_size_in_byte * (size_t)num_blocks),
         is_sub_buffer_(is_sub_buffer), blocks_(num_blocks)
     {
-        TRACE_IN;
+        TRACING("Creating RDMABuffer");
         if (is_sub_buffer_)
         { // the sub buffer
             CHECK(base_buffer != nullptr) << "error of the base buffer";
@@ -167,7 +166,7 @@ namespace rdma_core
         }
 
         is_initialized = true;
-        TRACE_OUT;
+        //TRACE_OUT;
     }
 
     RDMABuffer *RDMABuffer::allocate_buffer(size_t buffer_size,

@@ -10,21 +10,19 @@ namespace rdma_core
     RDMAServerSession::RDMAServerSession(Config &conf) :
         RDMASession(conf)
     {
-        TRACE_IN;
+        TRACING("Creating RDMAServerSession");
         session_id_ = "ConnectionTest";
         VLOG(3) << "Creating a new RDMAServerSession for " << session_id_;
-        TRACE_OUT;
     }
     RDMAServerSession::~RDMAServerSession()
     {
-        TRACE_IN;
+        TRACING("Releasing RDMAServerSession");
         VLOG(3) << "Destroying the RDMAServerSession of " << info();
-        TRACE_OUT;
     }
 
     void RDMAServerSession::init_session()
     {
-        TRACE_IN;
+        TRACING("Initing RDMAServerSession");
         int listen_fd = TCPConnector::allocate_socket("RDMAServerSession");
         VLOG(1) << "RDMAServer is preparing everything for accepting new connections";
         {
@@ -66,11 +64,11 @@ namespace rdma_core
             } while (true);
             is_connected_ = true;
         }
-        TRACE_OUT;
     }
 
     void RDMAServerSession::lazy_config_hca()
     {
+        TRACING("Lazy config Adapter@RDMAServerSession");
         VLOG(3) << "RDMAServerSession is reconfiging the channel&adapter";
         for (auto &each_endpoint : end_point_mgr_)
         {
@@ -82,6 +80,7 @@ namespace rdma_core
     }
     void RDMAServerSession::post_connecting()
     {
+        TRACING("Post connection for RDMAServerSession");
         VLOG(3) << "RDMAServerSession is handling with post_connecting";
     }
 

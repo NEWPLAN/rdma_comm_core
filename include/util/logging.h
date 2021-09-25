@@ -108,10 +108,6 @@ private:
 
 REGISTER_LOG_LEVEL(glog);
 
-#define UNIMPLEMENTED LOG(FATAL) << "Function \"" << __PRETTY_FUNCTION__ << "\" is not implemented yet";
-#define TRACE_IN VLOG(5) << "[TRACING] in function \"" << __FUNCTION__ << "\"";
-#define TRACE_OUT VLOG(5) << "[TRACING] out function \"" << __FUNCTION__ << "\"";
-
 #include <glog/logging.h>
 
 /****************************below is tracing*************************************/
@@ -193,8 +189,8 @@ protected:
         auto &sub_logger = log_map_[tracing_tid_];
         sub_logger.push_back(std::move(tuple_value));
 #else
-        VLOG(TRACING_LOG_LEVEL) << "[TRACING-IN]: "
-                                << "line = " << tracing_line_ << ", func = " << tracing_function_ << ", src = " << tracing_file_ << ", info = " << tracing_info_;
+        VLOG(TRACING_LOG_LEVEL) << "[TRACING-IN]: [" << tracing_function_ << " @ "
+                                << tracing_file_.substr(tracing_file_.find_last_of("/") + 1) << ":" << tracing_line_ << "]    " << tracing_info_;
 #endif
     }
 
@@ -211,8 +207,8 @@ public:
         auto &sub_logger = log_map_[tracing_tid_];
         sub_logger.push_back(std::move(tuple_value));
 #else
-        VLOG(TRACING_LOG_LEVEL) << "[TRACING-OUT]: "
-                                << "line = " << tracing_line_ << ", func = " << tracing_function_ << ", src = " << tracing_file_ << ", info = " << tracing_info_;
+        VLOG(TRACING_LOG_LEVEL) << "[TRACING-OUT]: [" << tracing_function_ << " @ "
+                                << tracing_file_.substr(tracing_file_.find_last_of("/") + 1) << ":" << tracing_line_ << "]    " << tracing_info_;
 #endif
     }
 
@@ -276,6 +272,27 @@ private:
 
 #define TRACING_UNIQUE(info, count) auto CONNECT(value_, count) = std::move(Tracer::get_tracer_instance(__FUNCTION__, __FILE__, __LINE__, (info), get_tid()))
 
-#define TRACING(info) TRACING_UNIQUE(info, __COUNTER__)
+#define UNIMPLEMENTED LOG(FATAL) << "Function \"" << __PRETTY_FUNCTION__ << "\" is not implemented yet";
+
+#if defined(DEBUGING_TRACING)
+#define TRACING(info) \
+    TRACING_UNIQUE(info, __COUNTER__)
+
+#define TRACE_IN VLOG(5) << "[TRACING] in function \"" << __FUNCTION__ << "\"";
+#define TRACE_OUT VLOG(5) << "[TRACING] out function \"" << __FUNCTION__ << "\"";
+
+#else
+#define TRACING(info) \
+    do {              \
+    } while (0)
+
+#define TRACE_IN \
+    do {         \
+    } while (0);
+
+#define TRACE_OUT \
+    do {          \
+    } while (0);
+#endif
 
 #endif

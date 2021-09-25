@@ -7,7 +7,7 @@
 
 # Basic Design
 
-## Work Mode
+## Event Mode
 In general, RDMA works in the asynchronous event-driven fashion for high performance, and [rdma_comm_core](https://github.com/NEWPLAN/rdma_comm_core) supports three basic working modes. 
 
 - **`polling-aggressively`**: In this mode, thread(s) would proactively poll the `completion queue` without blocking to fetch the executing result (success or failure) of work requests submitted before. Application working in this mode may be latency-sensitive, accordingly, CPU resources are required.
