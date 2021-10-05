@@ -33,7 +33,7 @@ namespace rdma_core
     RDMASession::RDMASession(Config &conf) :
         work_env_(conf)
     {
-        VLOG(3) << "Creating a new RDMASession for " << work_env_.role;
+        VLOG(3) << "Allocating basic resources for " << work_env_.role << "@" << work_env_.session_id;
         { // bind function
             established_done_ = std::bind(&RDMASession::default_established_fn, this,
                                           std::placeholders::_1);
@@ -52,7 +52,7 @@ namespace rdma_core
     RDMASession::~RDMASession()
     {
         // UNIMPLEMENTED;
-        VLOG(3) << "Destroying the RDMASession of " << info();
+        VLOG(3) << "Releasing basic resources for " << info();
     }
 
     void RDMASession::process_CQ(std::vector<RDMAChannel *> aggregated_channels)
@@ -121,6 +121,10 @@ namespace rdma_core
 
         VLOG(3) << "Connection testing is done, everything is OK!";
     }
+    void RDMASession::allocate_resources()
+    {
+        UNIMPLEMENTED;
+    }
 
     void RDMASession::running() //start services
     {
@@ -153,11 +157,11 @@ namespace rdma_core
 
     int RDMASession::accept_new_connection(int sock_fd, struct sockaddr_in cin)
     {
-        VLOG(2) << "Handles new connect request by " << info();
         std::string peer_ip = std::string(inet_ntoa(cin.sin_addr));
         int peer_port = htons(cin.sin_port);
-        VLOG(2) << "the remote info of connection request is "
-                << peer_ip << ":" << peer_port;
+
+        VLOG(2) << info() << " is handling new connect request["
+                << peer_ip << ":" << peer_port << "]";
         RDMAEndPoint *new_EndPoint = RDMAEndPoint::create_endpoint(sock_fd, peer_ip,
                                                                    peer_port, work_env_,
                                                                    this);

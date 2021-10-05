@@ -27,13 +27,14 @@ namespace rdma_core
         virtual ~RDMASession();             // destroy function
         virtual inline std::string info()   //show the info of the session
         {
-            return work_env_.role + "@" + session_id_;
+            return work_env_.role + "@" + work_env_.session_id;
         }
 
         virtual std::string get_id() // return the unique id of this session
         {
-            return work_env_.role + "@" + session_id_;
+            return work_env_.role + "@" + work_env_.session_id;
         }
+        virtual void allocate_resources();
 
         virtual void init_session() = 0; // preparing everything for the connection
         virtual void running();          // start services
@@ -67,8 +68,8 @@ namespace rdma_core
         void real_connecting();
 
     protected:
+        //std::string session_id_ = "BaseSession";                   // identify of the object
         Config work_env_;                                          // environment of this session
-        std::string session_id_ = "BaseSession";                   // identify of the object
         std::vector<std::unique_ptr<RDMAEndPoint>> end_point_mgr_; // a manager of rdmaendpoint
         std::function<void()> before_processing_cb_;               // callback when connection is established
         bool is_connected_ = false;                                // the connection has been set up

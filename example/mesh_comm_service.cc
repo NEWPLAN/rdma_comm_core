@@ -39,7 +39,7 @@ namespace
         ServerTower(Config &conf) :
             RDMAServerSession(conf)
         {
-            session_id_ = "FullMeshService";
+            conf.session_id = "FullMeshService";
             VLOG(3) << "Creating RDMAServer for FullMesh";
         }
         virtual ~ServerTower()

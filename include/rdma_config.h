@@ -27,8 +27,9 @@ namespace rdma_core
         int service_type = 0;                             /*service type: Full_Mesh, Server_Cient*/
         int tree_width = 0;                               /*the tree allreduce width*/
         std::vector<std::vector<std::string>> sub_groups; /*allreduce group for tree*/
-        std::string role;
-        std::string master_ip; // master node addr
+        std::string role;                                 /* which role to used*/
+        std::string master_ip;                            /* master node addr*/
+        std::string session_id;                           /*session id*/
     };
 }; // namespace rdma_core
 

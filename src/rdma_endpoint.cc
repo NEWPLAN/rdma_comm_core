@@ -20,7 +20,7 @@ namespace rdma_core
         registered_session_(session)
     {
         TRACE_IN;
-        VLOG(3) << "Create RDMAEndPoint";
+        VLOG(3) << "Create RDMAEndPoint for " << registered_session_->info();
 
         CHECK(pre_connector_ == nullptr) << "tcp connector must be null";
         pre_connector_.reset(new TCPConnector(fd, ip, port));

@@ -11,8 +11,8 @@ namespace rdma_core
         RDMASession(conf)
     {
         TRACING("Creating RDMAServerSession");
-        session_id_ = "ConnectionTest";
-        VLOG(3) << "Creating a new RDMAServerSession for " << session_id_;
+        //session_id_ = "ConnectionTest";
+        VLOG(3) << "Creating a new RDMAServerSession for " << conf.session_id;
     }
     RDMAServerSession::~RDMAServerSession()
     {

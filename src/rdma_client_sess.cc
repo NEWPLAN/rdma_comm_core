@@ -12,14 +12,14 @@ namespace rdma_core
         RDMASession(conf)
     {
         TRACING("Building RDMAClientSession");
-        session_id_ = "ConnectionTest";
-        VLOG(3) << "Creating a new RDMAClientSession for " << session_id_;
+        //session_id_ = "ConnectionTest";
+        VLOG(3) << "Creating a new RDMAClientSession for " << work_env_.session_id;
         //TRACE_OUT;
     }
     RDMAClientSession::~RDMAClientSession()
     {
         TRACING("Releasing RDMAClientSession");
-        VLOG(3) << "Destroying the RDMAClientSession of " << session_id_;
+        VLOG(3) << "Destroying the RDMAClientSession of " << work_env_.session_id;
     }
 
     void RDMAClientSession::init_session()
