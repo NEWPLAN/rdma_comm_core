@@ -192,7 +192,7 @@ namespace
         ClientTower(Config &conf) :
             RDMAClientSession(conf)
         {
-            session_id_ = "FullMeshService";
+            // session_id_ = "FullMeshService";
             VLOG(3) << "Creating RDMAClient for FullMesh";
         }
         virtual ~ClientTower()
